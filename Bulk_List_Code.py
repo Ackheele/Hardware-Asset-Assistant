@@ -1,3 +1,4 @@
+import re
 import tkinter as tk
 from tkinter import scrolledtext, messagebox
 import os
@@ -5,30 +6,18 @@ from tkinter import filedialog
 
 def add_asset(event=None):
     new_asset = asset_entry.get()
-    if new_asset:  # Make sure the asset is not empty
-        if len(new_asset) < 6:
-            messagebox.showerror("Error", "String length must be at least 7 characters. Please edit the string.")
-        else:
-            # Split the entered string at "M" inclusively
-            split_assets = []
-            current_asset = ""
-            for char in new_asset:
-                if char == "M" and current_asset:
-                    split_assets.append(current_asset)
-                    current_asset = "M"
-                else:
-                    current_asset += char
-            if current_asset:
-                split_assets.append(current_asset)
-
-            for asset in split_assets:
-                asset_list.append(asset)
-                display_area.insert(tk.END, asset + '\n')
+    # Define the regex pattern
+    pattern = re.compile(r'M\w{4,5}\d')
+    # Find all matching substrings
+    assets = pattern.findall(new_asset)
+    for asset in assets:
+        asset_list.append(asset)
+        display_area.insert(tk.END, asset + "\n")
     asset_entry.delete(0, tk.END)  # Clear the input field
 
 def display_asset():
     final_str = ' "OR" '.join(asset_list)
-    final_display_area.insert(tk.END, final_str + '\n')
+    final_display_area.insert(tk.END, final_str)
     save_status.config(text="Bulk List Generated")
 
 def copy_to_clipboard():
@@ -73,8 +62,8 @@ def main():
     asset_entry.pack(pady=10)
     asset_entry.bind("<Return>", add_asset)
 
-    # Button to add assets
-    add_button = tk.Button(root, text="Add Asset", command=add_asset)
+    # Button to add assets 
+    add_button = tk.Button(root, text="Add Asset/Assets", command=add_asset)
     add_button.pack(pady=5)
 
     # ScrolledText widget to display the assets
