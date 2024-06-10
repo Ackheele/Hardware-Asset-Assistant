@@ -1,13 +1,29 @@
 import tkinter as tk
-from tkinter import scrolledtext, simpledialog
+from tkinter import scrolledtext, messagebox
 import os
 from tkinter import filedialog 
 
 def add_asset(event=None):
     new_asset = asset_entry.get()
     if new_asset:  # Make sure the asset is not empty
-        asset_list.append(new_asset)
-        display_area.insert(tk.END, new_asset + '\n')
+        if len(new_asset) < 6:
+            messagebox.showerror("Error", "String length must be at least 7 characters. Please edit the string.")
+        else:
+            # Split the entered string at "M" inclusively
+            split_assets = []
+            current_asset = ""
+            for char in new_asset:
+                if char == "M" and current_asset:
+                    split_assets.append(current_asset)
+                    current_asset = "M"
+                else:
+                    current_asset += char
+            if current_asset:
+                split_assets.append(current_asset)
+
+            for asset in split_assets:
+                asset_list.append(asset)
+                display_area.insert(tk.END, asset + '\n')
     asset_entry.delete(0, tk.END)  # Clear the input field
 
 def display_asset():
